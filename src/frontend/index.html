@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Gamily | Dashboard</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="dist/css/skins/skin-blue.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="plugins/iCheck/flat/blue.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body class="hold-transition skin-blue sidebar-mini">
+    <div id="dashboard-app">
+      <script type="text/x-handlebars" data-template-name="application">
+        {{#if loadingLeaf}}
+        <div style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:rgba(100,100,100,0.7);z-index:100;"></div>
+        {{/if}}
+        <div class="wrapper">
+          <header class="main-header">
+            <!-- Logo -->
+            <a href="index2.html" class="logo">
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><b>G</b>..Y</span>
+              <!-- logo for regular state and mobile devices -->
+              <span class="logo-lg"><b>GAM</b>ILY</span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" role="navigation">
+              <!-- Sidebar toggle button-->
+              <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                  <!-- User Account: style can be found in dropdown.less -->
+                  <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      <img src="{{profilePicture}}" class="user-image" alt="User Image">
+                      <span class="hidden-xs">{{fullName}}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <!-- User image -->
+                      <li class="user-header">
+                        <img src="{{profilePicture}}" class="img-circle" alt="User Image">
+                        <p>
+                          {{fullName}}
+                          <small>Registered Member</small>
+                        </p>
+                      </li>
+                      <!-- Menu Footer-->
+                      <li class="user-footer">
+                        <div class="pull-right">
+                          <a href="#" class="btn btn-default btn-flat" {{action "signout"}}>Sign out</a>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+          </header>
+          <!-- Left side column. contains the logo and sidebar -->
+          <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+              <!-- Sidebar user panel -->
+              <div class="user-panel">
+                <div class="pull-left image">
+                  <img src="{{profilePicture}}" class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                  <p>{{fullName}}</p>
+                  <a href="#"><i class="fa fa-circle text-success"></i> Registered Member</a>
+                </div>
+              </div>
+              <!-- sidebar menu: : style can be found in sidebar.less -->
+              <ul class="sidebar-menu">
+                <li class="header">GAMILY CONFIGURATION</li>
+                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Rule Engine</span></a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Manually Trigger Event</span></a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>View Your GDE Instances</span></a></li>
+                <li class="header">HOW TO ADD</li>
+                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>FrontEnd</span></a></li>
+                <li class="treeview">
+                  <a href="#">
+                    <i class="fa fa-share"></i> <span>BackEnd</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Generic</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> PHP Library</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Python Package</a></li>
+                  </ul>
+                </li>
+                <li class="header">HELP US</li>
+                <li><a href="https://github.com/IIITSERC/gamily_app" target="_blank"><i class="fa fa-circle-o text-red"></i> <span>Contribute</span></a></li>
+                <li><a href="https://github.com/IIITSERC/gamily_app" target="_blank"><i class="fa fa-circle-o text-red"></i> <span>Star Repository</span></a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Share Experience</span> <small class="label pull-right bg-green">important</small></a></li>
+              </ul>
+            </section>
+            <!-- /.sidebar -->
+          </aside>
+
+          <!-- Content Wrapper. Contains page content -->
+          <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+              <h1>
+                Dashboard
+                <small>Manage Rule Engine</small>
+              </h1>
+              <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Rule Engine</li>
+              </ol>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+              <div class="row">
+                <div class="col-md-3">
+                  <a href="#" class="btn btn-primary btn-block margin-bottom">Save</a>
+                  <div class="box box-solid">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Your GDEs</h3>
+                      <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                      </div>
+                    </div>
+                    <div class="box-body no-padding">
+                      <ul class="nav nav-pills nav-stacked">
+                        {{#each getSelfInstances as |GDE|}}
+                        <li><a {{action "changeCurrentGDE" GDE.name}}>{{GDE.name}} <span class="label label-primary pull-right">12</span></a></li>
+                        {{/each}}
+                        {{#if createGDEOn}}
+                        <li><a {{action "newGDEToggle"}}><i class="fa fa-close"></i> Cancel</a></li>
+                        {{else}}
+                        <li><a {{action "newGDEToggle"}}><i class="fa fa-plus"></i> Add New GDE</a></li>
+                        {{/if}}
+                      </ul>
+                    </div><!-- /.box-body -->
+                  </div><!-- /. box -->
+                </div><!-- /.col -->
+                <div class="col-md-9">
+                {{#if createGDEOn}}
+                  <div class="box box-primary">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Add new GDE</h3>
+                      <div class="box-tools pull-right">
+                      </div><!-- /.box-tools -->
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                      <div class="form-group">
+                        <label>Name of GDE</label>
+                        {{input class="form-control" placeholder="Name of the GDE" value=createGDEName required="required"}}
+                      </div>
+                      <div class="form-group">
+                        <label>Type of GDE</label>
+                          <select class="form-control" onchange={{action "createGDESelect" value="target.value"}}>
+                            <option value="" selected="selected">Select GDE Type</option>
+                          {{#each gdeType as |GDE|}}
+                            <option value={{GDE.path}}>{{GDE.name}}</option>
+                          {{/each}}
+                          </select>
+                      </div>
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                      <button type="submit" class="btn btn-primary" {{action "createNewGDE"}}>Create</button>
+                    </div>
+                  </div><!-- /. box -->
+                {{else}}
+                  <div class="box box-primary">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Rules defined</h3>
+                      <div class="box-tools pull-right">
+                      </div><!-- /.box-tools -->
+                    </div><!-- /.box-header -->
+                    <div class="box-body no-padding">
+                      <div class="table-responsive mailbox-messages">
+                        <table class="table table-hover table-striped">
+                          <tbody>
+                          {{#each currentRules as |rule|}}
+                          <tr>
+                            {{#if rule.enabled}}
+                            <td><div class="icheckbox_flat-blue checked" {{action "toogleEnabled" rule}}></div></td>
+                            {{else}}
+                            <td><div class="icheckbox_flat-blue" {{action "toogleEnabled" rule}}></div></td>
+                            {{/if}}
+                            <td class="mailbox-name"><a href="#">{{rule.name}}</a></td>
+                            <td class="mailbox-date">{{rule.event}}</td>
+                            <td class="mailbox-subject"><b>{{rule.action}}</b> - {{rule.meaning}}</td>
+                            <td class="mailbox-date">{{rule.value}}</td>
+                          </tr>
+                          {{/each}}
+                          </tbody>
+                        </table><!-- /.table -->
+                      </div><!-- /.mail-box-messages -->
+                    </div><!-- /.box-body -->
+                    <div class="box-footer no-padding">
+                    </div>
+                  </div><!-- /. box -->
+                {{/if}}
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </section><!-- /.content -->
+          </div><!-- /.content-wrapper -->
+          <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>Version</b> Prototype v3.0
+            </div>
+            <strong>Built & Contributed by <a href="http://serc.iiit.ac.in">Software Engineering Research Center</a>.</strong>
+          </footer>
+
+          <!-- Control Sidebar -->
+          <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+              <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+              <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            </ul>
+          </aside><!-- /.control-sidebar -->
+          <!-- Add the sidebar's background. This div must be placed
+               immediately after the control sidebar -->
+          <div class="control-sidebar-bg"></div>
+        </div><!-- ./wrapper -->
+      </script>
+    </div>
+
+    <!-- jQuery 2.1.4 -->
+    <script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!-- Crypto library required for MD5 -->
+    <script src="dist/js/md5.js"></script>
+    <!-- Ember.js 2.5.1 -->
+    <script src="plugins/ember/ember-template-compiler.js"></script>
+    <script src="plugins/ember/ember.prod.js"></script>
+    <script src="plugins/ember/ember-data.prod.js"></script>
+    <script src="dist/js/ember-dashboard-app.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <!-- Slimscroll -->
+    <script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <!-- FastClick -->
+    <script src="plugins/fastclick/fastclick.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="dist/js/app.min.js"></script>
+    <!-- iCheck -->
+    <script src="plugins/iCheck/icheck.min.js"></script>
+    <!-- Page Script -->
+    <script>
+      $(function () {
+        //Enable iCheck plugin for checkboxes
+        //iCheck for checkbox and radio inputs
+        $('.mailbox-messages input[type="checkbox"]').iCheck({
+          checkboxClass: 'icheckbox_flat-blue',
+          radioClass: 'iradio_flat-blue'
+        });
+
+        //Enable check and uncheck all functionality
+        $(".checkbox-toggle").click(function () {
+          var clicks = $(this).data('clicks');
+          if (clicks) {
+            //Uncheck all checkboxes
+            $(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
+            $(".fa", this).removeClass("fa-check-square-o").addClass('fa-square-o');
+          } else {
+            //Check all checkboxes
+            $(".mailbox-messages input[type='checkbox']").iCheck("check");
+            $(".fa", this).removeClass("fa-square-o").addClass('fa-check-square-o');
+          }
+          $(this).data("clicks", !clicks);
+        });
+
+        //Handle starring for glyphicon and font awesome
+        $(".mailbox-star").click(function (e) {
+          e.preventDefault();
+          //detect type
+          var $this = $(this).find("a > i");
+          var glyph = $this.hasClass("glyphicon");
+          var fa = $this.hasClass("fa");
+
+          //Switch states
+          if (glyph) {
+            $this.toggleClass("glyphicon-star");
+            $this.toggleClass("glyphicon-star-empty");
+          }
+
+          if (fa) {
+            $this.toggleClass("fa-star");
+            $this.toggleClass("fa-star-o");
+          }
+        });
+      });
+    </script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="dist/js/demo.js"></script>
+  </body>
+</html>
