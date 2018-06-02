@@ -5,6 +5,7 @@ from flask_jsonpify import jsonify
 
 leaderboard = Flask(__name__)
 leaderboard.config.from_object('leaderboard.config')
+print leaderboard.config['SQLALCHEMY_DATABASE_URI']
 db = SQLAlchemy(leaderboard)
 from leaderboard import models
 from leaderboard.models import *
@@ -21,14 +22,14 @@ def add_user(username):
     return
 
 def find_user(username):
-    user = User.query.filter_by(nickname=username).first()
+    user = User.query.filter_by(fullname=username).first()
     return user
 
 def find_user_force(username):
-    user = User.query.filter_by(nickname=username).first()
+    user = User.query.filter_by(fullname=username).first()
     if user is None:
         add_user(username)
-        user = User.query.filter_by(nickname=username).first()
+        user = User.query.filter_by(fullname=username).first()
     return user
 
 def find_instance(name):
@@ -54,7 +55,7 @@ def show_all_users():
     for user in users:
         data.append({
             'id': user.id,
-            'name': user.nickname
+            'name': user.fullname
         })
     return jsonify({
         'success': True,
@@ -64,7 +65,7 @@ def show_all_users():
 
 @leaderboard.route('/user/<page>', methods=["GET"])
 def show_user(page):
-    user = User.query.filter_by(nickname=page).first()
+    user = User.query.filter_by(fullname=page).first()
     scores = UserScore.query.filter_by(user_id=user.id)
     leaderboard = []
     for score in scores:
@@ -74,7 +75,7 @@ def show_user(page):
         leaderboard.append(temp_)
     data = ({
         'id': user.id,
-        'name': user.nickname,
+        'name': user.fullname,
         'scores': leaderboard
     })
     return jsonify({
@@ -108,10 +109,13 @@ def show_leaderboard(page, methods=["GET"]):
 @leaderboard.route('/create', methods=["POST"])
 def create_instance():
     try:
-        insance = Instance(request.form['name'], request.form['description'])
-        db.session.add(insance)
+        instance = Instance(request.form['name'], request.form['description'])
+        # instance = Instance(request.args['name'], request.args['description'])
+        print request.form['name'], request.form['description']
+        db.session.add(instance)
         db.session.commit()
-    except:
+    except Exception as e:
+        print e
         return jsonify({
             'success': False,
             'message': 'Something went wrong :('
@@ -134,12 +138,15 @@ def show_all_leaderboard():
     })
 
 
-@leaderboard.route('/give', methods=["POST"])
+@leaderboard.route('/give', methods=["POST","GET"])
 def give_score_to_user():
     try:
-        user = find_user_force(request.form['username'])
-        instance = find_instance(request.form['instance'])
-        amount = int(request.form['amount'])
+        # user = find_user_force(request.form['username'])
+        # instance = find_instance(request.form['instance'])
+        # amount = int(request.form['amount'])
+        user = find_user_force(request.args['username'])
+        instance = find_instance(request.args['instance'])
+        amount = int(request.args['amount'])
         existing = UserScore.query.filter_by(user_id=user.id, instance_id=Instance.id).all()
         if len(existing) > 0:
             score_data = existing[0]

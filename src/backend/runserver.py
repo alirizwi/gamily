@@ -66,12 +66,69 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.email
 
+# Model for normal user
+class Player(db.Model):
+    __tablename__ = 'player'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(120))
+    fullname = db.Column(db.String(120))
+    validate_hash = db.Column(db.String(120))
+    is_validated = db.Column(db.Integer, default=0)
+
+    def __init__(self, email, password, fullname):
+        self.fullname = fullname
+        self.email = email
+        self.password = self.encrypt_password(password)
+        self.create_random_hash()
+
+    def encrypt_password(self, password):
+        hash = hashlib.md5()
+        hash.update(password)
+        return hash.hexdigest()
+
+    def verify(self, hash):
+        if self.validate_hash == hash:
+            self.is_validated = True
+            return True
+        return False
+
+    def login(self, password):
+        if self.password == self.encrypt_password(password):
+            return True
+        return False
+
+    def is_verified(self):
+        return self.is_validated
+
+    def create_random_hash(self):
+        lst = [random.choice(string.ascii_letters + string.digits) for n in xrange(60)]
+        self.validate_hash = "".join(lst)
+
+    def get_hash(self):
+        return self.validate_hash
+
+    def __repr__(self):
+        return '<User %r>' % self.email
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.fullname
+        }
 
 class GDE(db.Model):
     __tablename__ = 'gde'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120))
-    prefix = db.Column(db.String(120), unique=True)
+    path = db.Column(db.String(120), unique=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'path': self.path
+        }
 
 class Action(db.Model):
     __tablename__ = 'action'
@@ -110,10 +167,10 @@ app.register_blueprint(avatar, url_prefix='/avatar')
 
 def send_verification_email(email, fullname, hash):
     import smtplib
-    sender = 'shivam.khandelwal@research.iiit.ac.in'
+    sender = 'syedmohdali.rizwi@students.iiit.ac.in'
     receivers = [email]
 
-    message = """From: Shivam Khandelwal <shivam.khandelwal@research.iiit.ac.in>
+    message = """From: 'Syed Mohd Ali Rizwi <'syedmohdali.rizwi@students.iiit.ac.in'>
 To: """ + fullname + """ <""" + email + """>
 Subject: Gamily account verification
 
@@ -127,9 +184,9 @@ Gamily
 Gamification for all
 """
     try:
-        smtpObj = smtplib.SMTP('research.iiit.ac.in')
+        smtpObj = smtplib.SMTP('students.iiit.ac.in')
         smtpObj.set_debuglevel(False)
-        smtpObj.login('shivam.khandelwal', 'allCAPS123')
+        smtpObj.login('syedmohdali.rizwi', '')
         try:
             smtpObj.sendmail(sender, receivers, message)
         finally:
@@ -233,23 +290,35 @@ def sign_out():
 @app.route('/check', methods=["GET"])
 def is_logged_in():
     try:
-        if session['user'] != '' or True:
-            # user = User.query.filter_by(id=session['user']).first()
+        if session['user'] != '':
+            user = User.query.filter_by(id=session['user']).first()
             response = jsonify({
                 'success': True,
                 'user': {
-                    'fullname': 'Shivam Khandelwal',
-                    'email': 'sk@students.iiit.ac.in'
+                    'fullname': user.fullname,
+                    'email': user.email
                 }})
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
     except:
         pass
     return jsonify({
-                'success': True,
+                'success': False,
                 'user': {
                     'fullname': 'Shivam Khandelwal',
                     'email': 'sk@students.iiit.ac.in'
                 }})
+
+@app.route('/gde/list', methods=["GET"])
+def show_all_gdes():
+    gdes = GDE.query.all()
+    data = []
+    for gde in gdes:
+        data.append(gde.to_dict())
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
+    })
 
 app.run(debug=True)

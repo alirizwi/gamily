@@ -11,6 +11,9 @@ from badges import models
 from badges.models import *
 badges = Blueprint('badges', 'badges')
 
+# import sys
+# sys.path.append("..")
+# from runserver import Player as User
 #========= The above part will be more or less the same for all GDE =======#
 
 #========================= Non-route functions ============================#
@@ -66,6 +69,7 @@ def show_user(page):
     badges = []
     for b in badge_ids:
         badge = Badge.query.filter_by(id=b.badge_id).first()
+        print badge
         badges.append(badge.to_dict())
     data = ({
         'id': user.id,
@@ -78,17 +82,14 @@ def show_user(page):
         'data': data
     })
 
-@badges.route('/create', methods=["GET", "POST"])
+@badges.route('/create', methods=["POST"])
 def create_badge():
     try:
-        # badge = Badge(request.form['name'], request.form['description'], request.form['image_name'])
-        print request.args['name'], request.args['description'], request.args['image_name']
-        badge = Badge(request.args['name'], request.args['description'], request.args['image_name'])
+        badge = Badge(request.form['name'], request.form['description'], request.form['image_name'])
+        print request.form['name'], request.form['description'], request.form['image_name']
+        # badge = Badge(request.args['name'], request.args['description'], request.args['image_name'])
         db.session.add(badge)
-        print badge.id
-        print "AA Gya"
         db.session.commit()
-        print "AA Gya"
     except Exception as e:
         print e
         return jsonify({

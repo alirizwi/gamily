@@ -1,5 +1,5 @@
 (function () {
-    var allGde = ["Leaderboard#1", "Badge#1", "Leaderboard#2", "Badge#2"];
+    var allGde = ["Leaderboard#1", "Badge#1", "Leaderboard#2"];
 
     var cAjax = function (obj) {
         return $.ajax({
@@ -60,43 +60,137 @@
         fullName: "LoggedIn User",
         email: 'admin@gamily.in',
         gdeType: [],
+        api_response: 0,
+        ajaxResponse: '',
+        ajaxURL: '',
+        badgesURL: '/backend/badges/list',
+        leaderboardURL: '/backend/leaderboard/list',
+        gdeURL: 'backend/gde/list',
+        gdeResponse: '',
         createGDEPath: "",
+        getData: "{}",
         selfInstances: [],
         getSelfInstances: function() {
             return this.get('selfInstances');
-        }.property(),
+        }.property('selfInstances'),
         gdeTypeInitialize: function() {
-            var arr = [];
-            arr.push(GDE.create({
-                'name': 'Leader Board',
-                'path': 'leaderboard'
-            }));
-            arr.push(GDE.create({
-                'name': 'Badge',
-                'path': 'badge'
-            }));
-            arr.push(GDE.create({
-                'name': 'Avatar',
-                'path': 'avatar'
-            }));
-            this.set('gdeType', arr);
+            var parent = this;
+            var success = function(data) {
+                parent.set('gdeResponse', data);
+            };
+            cAjax({
+                type: 'GET',
+                url: parent.gdeURL,
+                data: JSON.parse(this.get('getData')),
+                success: success
+            });
         }.on('init'),
+        fetchData: function(url) {
+            var parent = this;
+            var success = function(data) {
+                parent.set('ajaxResponse', data);
+            };
+            cAjax({
+                type: 'GET',
+                // url: this.get('ajaxURL'),
+                url: url,
+                data: JSON.parse(this.get('getData')),
+                success: success
+            });
+        }.observes('ajaxURL'),
         selfInstancesInitialize: function() {
+            var parent = this;
             var arr = [];
-            arr.push(Instance.create({
-                'name': 'Leaderboard#1'
-            }));
-            arr.push(Instance.create({
-                'name': 'Badge#1'
-            }));
-            arr.push(Instance.create({
-                'name': 'Leaderboard#2'
-            }));
-            arr.push(Instance.create({
-                'name': 'Badge#2'
-            }));
-            this.set('selfInstances', arr);
+
+            parent.fetchData(this.leaderboardURL);
+            parent.fetchData(this.badgesURL);
+
         }.on('init'),
+        processData: function() {
+            response = this.get('ajaxResponse');
+            console.log('finally')
+            console.log(response);
+            if(response != '') {
+                console.log("response is: " + response);
+                console.log(response.data);
+                // this.getResponse();
+                this.gdeInitialize();
+
+            }
+        }.observes('ajaxResponse'),
+        gdeInitialize: function() {
+            var arr = [];
+            console.log(this.get('ajaxURL'));
+            instances = this.get('selfInstances');
+            for(var i=0;i<instances.length;i++) {
+                arr.push(instances[i]);
+            }
+            response = this.get('ajaxResponse');
+            for(var i=0;i<response.data.length; i++) {
+                name = response.data[i].name;
+                arr.push(Instance.create({
+                    'name': name
+                }));
+            }
+
+            this.set('selfInstances', arr);
+            // console.log(this.get('selfInstances'));
+        },
+        processGDE: function() {
+            var arr=[];
+            response = this.get('gdeResponse');
+            for(var i=0;i<response.data.length; i++) {
+                name = response.data[i].name;
+                path = response.data[i].path;
+                arr.push(GDE.create({
+                    'name': name,
+                    'path': path
+                }));
+            }
+            this.set('gdeType', arr);
+        }.observes('gdeResponse'),
+        createGDERequest: function() {
+            var parent = this;
+            var success = function(data) {
+                if(data.success) {
+                    // parent.set('show_success', true);
+                    alert(data.message);
+                    console.log(data.message);
+                    document.location.href = "/";
+                } else {
+                    // parent.set('show_error', true);
+                }
+
+            };
+            path = this.get('createGDEPath');
+            console.log(this.get('createGDEName'));
+            console.log(this.get('createGDEDescription'));
+            console.log(this.get('createBadgeImageName'));
+            if(path == 'badge'){
+                cAjax({
+                    type: 'POST',
+                    url: 'backend/' + this.get('createGDEPath') + 's/create',
+                    data: {
+                        'name': parent.get('createGDEName'),
+                        'description': parent.get('createGDEDescription'),
+                        'image_name': parent.get('createBadgeImageName')
+                    },
+                    success: success
+                });
+            }
+            else {
+                cAjax({
+                    type: 'POST',
+                    url: 'backend/' + this.get('createGDEPath') + '/create',
+                    data: {
+                        'name': parent.get('createGDEName'),
+                        'description': parent.get('createGDEDescription'),
+                    },
+                    success: success
+                });
+            }
+
+        },
         loadingLeaf: true,
         profilePicture: function () {
             return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(this.get('email'));
@@ -114,6 +208,7 @@
         currentGDE: "Leaderboard#1",
         allGde: allGde,
         createGDEOn: false,
+        currentBadge: false,
         currentRules: function() {
             allRules = this.get('allRules');
             currentRulesList = [];
@@ -149,19 +244,37 @@
             newGDEToggle: function() {
                 this.toggleProperty('createGDEOn');
             },
+            badgeImageToggle: function() {
+                this.toggleProperty('currentBadge');
+            },
             createGDESelect: function(val) {
+                console.log("Here it is;");
                 this.set('createGDEPath', val);
+                console.log(this.get('createGDEPath'));
+                if(this.get('createGDEPath')=='badge'){
+                    this.set('currentBadge',true);
+                    console.log("yo");
+                }
+                else {
+                    this.set('currentBadge',false);
+                }
+                
             },
             createNewGDE: function() {
+
                 var arr = this.get('selfInstances');
                 var name = this.get('createGDEName');
-                //arr.push(Instance.create({
-                //    'name': name
-                //}));
-                arr.push(arr[1]);
+                var description = this.get('createGDEDescription');
+                arr.push(Instance.create({
+                   'name': name
+                }));
+                // arr.push(arr[1]);
                 this.set('selfInstances', arr);
+                console.log(this.get('createGDEPath'));
                 console.log(this.get('createGDEName'));
+                console.log(this.get('createGDEDescription'));
                 console.log(arr);
+                this.createGDERequest();
             }
         },
         backEndURL: "/backend",

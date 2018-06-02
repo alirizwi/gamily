@@ -1,6 +1,6 @@
 CREATE TABLE user
 (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   fullname VARCHAR(128),
   email VARCHAR(128) UNIQUE,
   password VARCHAR(128),
@@ -10,7 +10,47 @@ CREATE TABLE user
 
 CREATE TABLE gde
 (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(128),
   path VARCHAR(128)
+);
+
+CREATE TABLE player
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  fullname VARCHAR(128),
+  email VARCHAR(128) UNIQUE,
+  password VARCHAR(128),
+  validate_hash VARCHAR(128),
+  is_validated INTEGER DEFAULT 0
+);
+
+CREATE TABLE badge
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(64) UNIQUE,
+  description VARCHAR(256),
+  image_name VARCHAR(12)
+);
+
+CREATE TABLE user_badge
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  user_id INTEGER,
+  badge_id INTEGER
+);
+
+CREATE TABLE instance
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(64) UNIQUE,
+  description VARCHAR(256)
+);
+
+CREATE TABLE user_score
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  user_id INTEGER,
+  instance_id INTEGER,
+  score INTEGER
 );

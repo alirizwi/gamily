@@ -1,18 +1,18 @@
 from . import db
 # Documentation : http://flask-sqlalchemy.pocoo.org/2.1/
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
+    fullname = db.Column(db.String(64), index=True, unique=True)
 
-    def __init__(self, nickname):
-        self.nickname = nickname
+    def __init__(self, fullname):
+        self.fullname = fullname
 
     def to_dict(self):
         return {
             'id': self.id,
-            'name': self.nickname
+            'name': self.fullname
         }
-
 
 class Instance(db.Model):
     id = db.Column(db.Integer, primary_key=True)

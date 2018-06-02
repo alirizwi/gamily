@@ -173,6 +173,10 @@
                         {{input class="form-control" placeholder="Name of the GDE" value=createGDEName required="required"}}
                       </div>
                       <div class="form-group">
+                        <label>Description</label>
+                        {{input class="form-control" placeholder="Description of the GDE" value=createGDEDescription required="required"}}
+                      </div>
+                      <div class="form-group">
                         <label>Type of GDE</label>
                           <select class="form-control" onchange={{action "createGDESelect" value="target.value"}}>
                             <option value="" selected="selected">Select GDE Type</option>
@@ -181,6 +185,12 @@
                           {{/each}}
                           </select>
                       </div>
+                      {{#if currentBadge}}
+                      <div class="form-group">
+                        <label>Image Name</label>
+                        {{input class="form-control" placeholder="Image Name" value=createBadgeImageName required="required"}}
+                      </div>
+                      {{/if}}
                     </div><!-- /.box-body -->
                     <div class="box-footer">
                       <button type="submit" class="btn btn-primary" {{action "createNewGDE"}}>Create</button>
