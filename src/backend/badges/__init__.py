@@ -116,6 +116,13 @@ def show_all_badges():
         'data': data
     })
 
+@badges.route('/list/id/<id>', methods=["GET"])
+def show_current_badge(id):
+    print "id:", id
+    badge = Badge.query.filter_by(id=id).first()
+    print badge.name
+    return badge.name
+
 @badges.route('/actions', methods=["GET"])
 def show_all_badge_actions():
     data = []
@@ -148,6 +155,18 @@ def create_badge_user_mapping():
     return jsonify({
         'success': True,
         'message': 'Badge awarded successfully'
+    })
+
+@badges.route('/user_badges', methods=["GET"])
+def show_all_user_badges():
+    user_badges = UserBadge.query.all()
+    data = []
+    for user_badge in user_badges:
+        data.append(user_badge.to_dict())
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
     })
 
 @badges.route('/static/<page>', methods=["GET"])

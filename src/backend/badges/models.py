@@ -35,3 +35,10 @@ class UserBadge(db.Model):
     def __init__(self, user, badge):
         self.user_id = user.id
         self.badge_id = badge.id
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'badge_id': self.badge_id,
+        }

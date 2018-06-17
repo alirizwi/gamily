@@ -137,6 +137,11 @@ def show_all_leaderboard():
         'data': data
     })
 
+@leaderboard.route('/list/id/<id>', methods=["GET"])
+def show_current_leaderboard(id):
+    leaderboard = Instance.query.filter_by(id=id).first()
+    return leaderboard.name
+
 @leaderboard.route('/actions', methods=["GET"])
 def show_all_leaderboard_actions():
     data = []
@@ -149,15 +154,12 @@ def show_all_leaderboard_actions():
     })
 
 
-@leaderboard.route('/give', methods=["POST","GET"])
+@leaderboard.route('/give', methods=["POST"])
 def give_score_to_user():
     try:
-        # user = find_user_force(request.form['username'])
-        # instance = find_instance(request.form['instance'])
-        # amount = int(request.form['amount'])
-        user = find_user_force(request.args['username'])
-        instance = find_instance(request.args['instance'])
-        amount = int(request.args['amount'])
+        user = find_user_force(request.form['username'])
+        instance = find_instance(request.form['instance'])
+        amount = int(request.form['amount'])
         existing = UserScore.query.filter_by(user_id=user.id, instance_id=Instance.id).all()
         if len(existing) > 0:
             score_data = existing[0]
@@ -199,4 +201,16 @@ def take_score_from_user():
     return jsonify({
         'success': True,
         'message': 'Points taken successfully'
+    })
+
+@leaderboard.route('/user_score', methods=["GET"])
+def show_all_user_score():
+    user_scores = UserScore.query.all()
+    data = []
+    for user_score in user_scores:
+        data.append(user_score.to_dict())
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
     })

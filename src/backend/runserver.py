@@ -7,6 +7,7 @@ from sqlalchemy import exc
 import string
 import hashlib
 import random
+import requests
 from validate_email import validate_email
 from flask_jsonpify import jsonify
 
@@ -372,5 +373,74 @@ def show_all_events():
         'message': '',
         'data': data
     })
+
+def get_events_listening_to_hook(hook):
+    events = Events.query.filter_by(name=hook).all()
+    return events
+
+def rule_depending_on_event(event):
+    rules = Rule.query.filter_by(event=event).all()
+    return rules
+
+@app.route('/hooks', methods=["POST"])
+def hooks_function():
+    try:
+        events = get_events_listening_to_hook(request.form['hook_name'])
+        username = request.form['username']
+        print "Events:", events
+        if len(events) == 0:
+            return jsonify({
+                'success': False,
+                'message': 'No event exist with that name!!'
+            })            
+        print  "Username:", username
+        for event in events:
+            print event.name
+            rules = rule_depending_on_event(event.name)
+            print "Rules:" ,rules
+            for rule in rules:
+                print rule.name, rule.gde_type, rule.action
+
+                if rule.gde_type == 'leaderboard':
+                    print "LB"
+                    gde_url = 'http://localhost:5000/leaderboard/list/id/'+str(rule.gde_id)
+                    print "gde url", gde_url
+                    r = requests.get(url=gde_url)
+                    data = r.text
+                    print "Res:", data
+
+                    url = 'http://localhost:5000/leaderboard/'+rule.action
+                    print "url:", url
+                    data = {'username': username,
+                            'instance': data,
+                            'amount': 10}
+                    r = requests.post(url=url, data=data)
+                    print "R:", r.text
+
+                elif rule.gde_type == 'badge':
+                    print "B"
+                    gde_url = 'http://localhost:5000/badges/list/id/'+str(rule.gde_id)
+                    print "gde url", gde_url
+                    r = requests.get(url=gde_url)
+                    data = r.text
+                    print "Res:", data
+
+                    url = 'http://localhost:5000/badges/'+rule.action
+                    print "url:", url
+                    data = {'username': username,
+                            'badge': data}
+                    r = requests.post(url=url, data=data)
+                    print "R:", r.text   
+        return jsonify({
+            'success': True,
+            'message': 'Successful'
+        })             
+
+    except:
+        return jsonify({
+            'success': False,
+            'message': 'Something went wrong :('
+        })
+
 
 app.run(debug=True)

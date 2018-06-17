@@ -41,3 +41,11 @@ class UserScore(db.Model):
         self.user_id = user.id
         self.instance_id = instance.id
         self.score = score
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'instance_id': self.instance_id,
+            'score': self.score
+        }
