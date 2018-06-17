@@ -15,16 +15,6 @@ CREATE TABLE gde
   path VARCHAR(128)
 );
 
-CREATE TABLE player
-(
-  id INTEGER PRIMARY KEY AUTO_INCREMENT,
-  fullname VARCHAR(128),
-  email VARCHAR(128) UNIQUE,
-  password VARCHAR(128),
-  validate_hash VARCHAR(128),
-  is_validated INTEGER DEFAULT 0
-);
-
 CREATE TABLE badge
 (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -53,4 +43,30 @@ CREATE TABLE user_score
   user_id INTEGER,
   instance_id INTEGER,
   score INTEGER
+);
+
+CREATE TABLE rule
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(64) UNIQUE,
+  action VARCHAR(20),
+  meaning VARCHAR(256),
+  value VARCHAR(256),
+  event VARCHAR(256),
+  gde_id INTEGER,
+  gde_type VARCHAR(20)
+);
+
+CREATE TABLE events
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(256) UNIQUE,
+  type VARCHAR(64) DEFAULT "simple"
+);
+
+CREATE TABLE hooks
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(256) UNIQUE,
+  type VARCHAR(64) DEFAULT "simple"
 );

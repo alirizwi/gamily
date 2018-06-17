@@ -148,7 +148,7 @@
                     <div class="box-body no-padding">
                       <ul class="nav nav-pills nav-stacked">
                         {{#each getSelfInstances as |GDE|}}
-                        <li><a {{action "changeCurrentGDE" GDE.name}}>{{GDE.name}} <span class="label label-primary pull-right">12</span></a></li>
+                        <li><a {{action "changeCurrentGDE" GDE}}>{{GDE.name}} <span class="label label-primary pull-right">{{numberOfRules}}</span></a></li>
                         {{/each}}
                         {{#if createGDEOn}}
                         <li><a {{action "newGDEToggle"}}><i class="fa fa-close"></i> Cancel</a></li>
@@ -197,6 +197,56 @@
                     </div>
                   </div><!-- /. box -->
                 {{else}}
+                  {{#if createRuleOn}}
+
+                  
+                  <div class="box box-primary">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Create New Rule</h3>
+                      <div class="box-tools pull-right">
+                      </div><!-- /.box-tools -->
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                      <div class="form-group">
+                        <label>Name</label>
+                        {{input class="form-control" placeholder="Name" value=createRuleName required="required"}}
+                      </div>
+                      {{allEvents}}
+                      <div class="form-group">
+                        <label>Event</label>
+                          <select class="form-control" onchange={{action "createRuleEvent" value="target.value"}}>
+                            <option value="" selected="selected">Select Event</option>
+                          {{#each allEvents.data as |event|}}
+                            <option >{{event.name}}</option>
+                          {{/each}}
+                          </select>
+                      </div>
+
+                      <div class="form-group">
+                        <label>Action</label>
+                          <select class="form-control" onchange={{action "createRuleAction" value="target.value"}}>
+                            <option value="" selected="selected">Select Action</option>
+                          {{#each allActions.data as |action|}}
+                            <option >{{action.name}}</option>
+                          {{/each}}
+                          </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Meaning</label>
+                        {{input class="form-control" placeholder="Meaning" value=createRuleMeaning required="required"}}
+                      </div>
+                      <div class="form-group">
+                        <label>Value</label>
+                        {{input class="form-control" placeholder="Value" value=createRuleValue required="required"}}
+                      </div>
+
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                      <button type="submit" class="btn btn-primary" {{action "createNewRule"}}>Create Rule</button>
+                    </div>
+                  </div><!-- /. box -->
+
+                  {{else}}
                   <div class="box box-primary">
                     <div class="box-header with-border">
                       <h3 class="box-title">Rules defined</h3>
@@ -214,7 +264,7 @@
                             {{else}}
                             <td><div class="icheckbox_flat-blue" {{action "toogleEnabled" rule}}></div></td>
                             {{/if}}
-                            <td class="mailbox-name"><a href="#">{{rule.name}}</a></td>
+                            <td class="mailbox-name">{{rule.name}}</td>
                             <td class="mailbox-date">{{rule.event}}</td>
                             <td class="mailbox-subject"><b>{{rule.action}}</b> - {{rule.meaning}}</td>
                             <td class="mailbox-date">{{rule.value}}</td>
@@ -223,10 +273,14 @@
                           </tbody>
                         </table><!-- /.table -->
                       </div><!-- /.mail-box-messages -->
+                      <div class="box-footer">
+                        <button class="btn btn-primary" {{action "newRuleToggle"}}>Create New Rule</button>
+                      </div>
                     </div><!-- /.box-body -->
                     <div class="box-footer no-padding">
                     </div>
                   </div><!-- /. box -->
+                  {{/if}}
                 {{/if}}
                 </div><!-- /.col -->
               </div><!-- /.row -->

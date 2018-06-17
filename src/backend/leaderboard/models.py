@@ -27,7 +27,8 @@ class Instance(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description
+            'description': self.description,
+            'type': 'leaderboard'
         }
 
 class UserScore(db.Model):

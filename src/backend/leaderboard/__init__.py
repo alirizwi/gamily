@@ -137,6 +137,17 @@ def show_all_leaderboard():
         'data': data
     })
 
+@leaderboard.route('/actions', methods=["GET"])
+def show_all_leaderboard_actions():
+    data = []
+    data.append({'name': 'give'})
+    data.append({'name': 'take'})
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
+    })
+
 
 @leaderboard.route('/give', methods=["POST","GET"])
 def give_score_to_user():

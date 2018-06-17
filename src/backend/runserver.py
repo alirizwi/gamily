@@ -66,57 +66,6 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.email
 
-# Model for normal user
-class Player(db.Model):
-    __tablename__ = 'player'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(120), unique=True)
-    password = db.Column(db.String(120))
-    fullname = db.Column(db.String(120))
-    validate_hash = db.Column(db.String(120))
-    is_validated = db.Column(db.Integer, default=0)
-
-    def __init__(self, email, password, fullname):
-        self.fullname = fullname
-        self.email = email
-        self.password = self.encrypt_password(password)
-        self.create_random_hash()
-
-    def encrypt_password(self, password):
-        hash = hashlib.md5()
-        hash.update(password)
-        return hash.hexdigest()
-
-    def verify(self, hash):
-        if self.validate_hash == hash:
-            self.is_validated = True
-            return True
-        return False
-
-    def login(self, password):
-        if self.password == self.encrypt_password(password):
-            return True
-        return False
-
-    def is_verified(self):
-        return self.is_validated
-
-    def create_random_hash(self):
-        lst = [random.choice(string.ascii_letters + string.digits) for n in xrange(60)]
-        self.validate_hash = "".join(lst)
-
-    def get_hash(self):
-        return self.validate_hash
-
-    def __repr__(self):
-        return '<User %r>' % self.email
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.fullname
-        }
-
 class GDE(db.Model):
     __tablename__ = 'gde'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -145,12 +94,70 @@ class Instance(db.Model):
     gde_id = db.Column(db.Integer, db.ForeignKey(GDE.id))
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
 
+# class Rule(db.Model):
+#     __tablename__ = 'rule'
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     instance_id = db.Column(db.Integer, db.ForeignKey(Instance.id))
+#     action_id = db.Column(db.Integer, db.ForeignKey(Action.id))
+#     value = db.Column(db.String(256))
+
 class Rule(db.Model):
     __tablename__ = 'rule'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    instance_id = db.Column(db.Integer, db.ForeignKey(Instance.id))
-    action_id = db.Column(db.Integer, db.ForeignKey(Action.id))
+    name = db.Column(db.String(64))
+    action = db.Column(db.String(20))
+    meaning = db.Column(db.String(256))
     value = db.Column(db.String(256))
+    event = db.Column(db.String(256))
+    gde_id = db.Column(db.Integer, db.ForeignKey(GDE.id))
+    gde_type = db.Column(db.String(20))
+
+    def __init__(self, name, action, meaning, value, event, gde_id, gde_type):
+        self.name = name
+        self.action = action
+        self.meaning = meaning
+        self.value = value
+        self.event = event
+        self.gde_id = gde_id
+        self.gde_type = gde_type
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'action': self.action,
+            'meaning': self.meaning,
+            'value': self.value,
+            'event': self.event,
+            'gde_id': self.gde_id,
+            'gde_type': self.gde_type
+        }    
+
+class Events(db.Model):
+    __tablename__ = 'events'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(256))
+    type = db.Column(db.String(64))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'type': self.type
+        } 
+
+class Hooks(db.Model):
+    __tablename__ = 'hooks'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(256))
+    type = db.Column(db.String(64))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'type': self.type
+        }    
 
 # Badges registering
 from badges import badges
@@ -315,6 +322,51 @@ def show_all_gdes():
     data = []
     for gde in gdes:
         data.append(gde.to_dict())
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
+    })
+
+@app.route('/rules/list', methods=["GET"])
+def show_all_rules():
+    print request.args['id'], request.args['type']
+    # rule = Rule.query.all()
+    rule = Rule.query.filter_by(gde_type=request.args['type'], gde_id=request.args['id'])
+    data = []
+    for r in rule:
+        data.append(r.to_dict())
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
+    })
+
+@app.route('/rules/create', methods=["POST"])
+def create_rules():
+    try:
+        rule = Rule(request.form['name'], request.form['event'], request.form['action'], request.form['meaning'], request.form['value'],request.form['gde_id'],request.form['gde_type'])
+        # instance = Instance(request.args['name'], request.args['description'])
+        print request.form['name'], request.form['value'], request.form['gde_id']
+        db.session.add(rule)
+        db.session.commit()
+    except Exception as e:
+        print e
+        return jsonify({
+            'success': False,
+            'message': 'Something went wrong :('
+        })
+    return jsonify({
+        'success': True,
+        'message': 'New Rule created successfully'
+    })
+
+@app.route('/events/list', methods=["GET"])
+def show_all_events():
+    events = Events.query.all()
+    data = []
+    for event in events:
+        data.append(event.to_dict())
     return jsonify({
         'success': True,
         'message': '',

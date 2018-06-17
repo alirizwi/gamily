@@ -23,7 +23,8 @@ class Badge(db.Model):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'image_name': self.image_name
+            'image_name': self.image_name,
+            'type': 'badge'
         }
 
 class UserBadge(db.Model):

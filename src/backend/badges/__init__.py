@@ -11,6 +11,9 @@ from badges import models
 from badges.models import *
 badges = Blueprint('badges', 'badges')
 
+
+# from ..runserver import Player as User
+
 # import sys
 # sys.path.append("..")
 # from runserver import Player as User
@@ -113,6 +116,15 @@ def show_all_badges():
         'data': data
     })
 
+@badges.route('/actions', methods=["GET"])
+def show_all_badge_actions():
+    data = []
+    data.append({'name': 'award'})
+    return jsonify({
+        'success': True,
+        'message': '',
+        'data': data
+    })
 
 @badges.route('/award', methods=["POST"])
 def create_badge_user_mapping():
