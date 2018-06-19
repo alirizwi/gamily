@@ -75,6 +75,7 @@
         currentRuleEvent: "",
         getData: "{}",
         selfInstances: [],
+        isSuccess: false,
         getSelfInstances: function() {
             return this.get('selfInstances');
         }.property('selfInstances'),
@@ -167,6 +168,7 @@
                     // document.location.href = "/";
                     location.reload(true);
                 } else {
+                    this.toggleProperty('isSuccess');
                     // parent.set('show_error', true);
                 }
 
@@ -200,12 +202,16 @@
             }
 
         },
+        isSuccessToggle: function() {
+            this.toggleProperty('isSuccess');
+        }, 
         createRuleRequest: function(){
             var parent = this;
             var success = function(data) {
                 if(data.success) {
                     // parent.set('show_success', true);
                     alert(data.message);
+                    // this.isSuccessToggle();
                     console.log(data.message);
                     location.reload(true);
                     // console.log(this.get('GDEOn'));
@@ -218,7 +224,6 @@
 
             };
 
-            // console.log(this.get('createBadgeImageName'));
             cAjax({
                 type: 'POST',
                 url: 'backend/' + 'rules/create',
@@ -227,12 +232,19 @@
                     'event': this.get('currentRuleEvent'),
                     'action': this.get('currentRuleAction'),
                     'meaning': this.get('createRuleMeaning'),
-                    'value': this.get('createRuleName'),
+                    'value': this.get('createRuleValue'),
                     'gde_id': this.get('GDEid'),
                     'gde_type': this.get('GDEtype'),
                 },
                 success: success
             });
+            console.log('name:', this.get('createRuleName'));
+            console.log('event:', this.get('currentRuleEvent'));
+            console.log('action:', this.get('currentRuleAction'));
+            console.log('meaning:', this.get('createRuleMeaning'));
+            console.log('value:', this.get('createRuleValue'));
+            console.log('gde_id:', this.get('GDEid'));
+            console.log('gde_type:', this.get('GDEtype'));
         },
         loadingLeaf: true,
         profilePicture: function () {
@@ -341,7 +353,8 @@
             }
             console.log("allEvents: " + allEvents);
             return currentRulesList;
-        }.observes('allEvents').property('allEvents'),    
+        }.observes('allEvents').property('allEvents'),   
+
 
         actions: {
             toogleEnabled: function(context) {
@@ -403,7 +416,7 @@
                
             },
             createRuleEvent: function(val) {
-                console.log("Here it is;");
+                console.log("it is;");
                 this.set('currentRuleEvent', val);
                 console.log(this.get('currentRuleEvent'));
                

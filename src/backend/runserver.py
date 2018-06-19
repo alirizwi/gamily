@@ -346,21 +346,21 @@ def show_all_rules():
 @app.route('/rules/create', methods=["POST"])
 def create_rules():
     try:
-        rule = Rule(request.form['name'], request.form['event'], request.form['action'], request.form['meaning'], request.form['value'],request.form['gde_id'],request.form['gde_type'])
+        rule = Rule(request.form['name'], request.form['action'], request.form['meaning'], request.form['value'], request.form['event'],request.form['gde_id'],request.form['gde_type'])
         # instance = Instance(request.args['name'], request.args['description'])
         print request.form['name'], request.form['value'], request.form['gde_id']
         db.session.add(rule)
         db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': 'New Rule created successfully'
+        })
     except Exception as e:
         print e
         return jsonify({
             'success': False,
             'message': 'Something went wrong :('
         })
-    return jsonify({
-        'success': True,
-        'message': 'New Rule created successfully'
-    })
 
 @app.route('/events/list', methods=["GET"])
 def show_all_events():
