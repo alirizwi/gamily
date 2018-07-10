@@ -15,12 +15,26 @@ CREATE TABLE gde
   path VARCHAR(128)
 );
 
-CREATE TABLE badge
+CREATE TABLE instance
 (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(64) UNIQUE,
   description VARCHAR(256),
-  image_name VARCHAR(12)
+  type VARCHAR(64)
+);
+
+CREATE TABLE badge_details
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  instance_id INTEGER,
+  image_name VARCHAR(256)
+);
+
+CREATE TABLE medal_details
+(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  instance_id INTEGER,
+  image_name VARCHAR(256)
 );
 
 CREATE TABLE user_badge
@@ -28,13 +42,6 @@ CREATE TABLE user_badge
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   user_id INTEGER,
   badge_id INTEGER
-);
-
-CREATE TABLE instance
-(
-  id INTEGER PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(64) UNIQUE,
-  description VARCHAR(256)
 );
 
 CREATE TABLE user_score

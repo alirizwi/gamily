@@ -2,7 +2,7 @@ from . import db
 # Documentation : http://flask-sqlalchemy.pocoo.org/2.1/
 from instance.models import User, Instance
 
-class Badge(Instance):
+class Medal(Instance):
     # id = db.Column(db.Integer, primary_key=True)
     # name = db.Column(db.String(64), db.ForeignKey(Instance.id))
     # description = db.Column(db.String(256), db.ForeignKey(Instance.description))
@@ -12,7 +12,7 @@ class Badge(Instance):
         self.name = name
         self.description = description
         # self.image_name = image_name
-        self.type = 'badge'
+        self.type = 'medal'
         # super().__init__(self)
         
     def getId(self):
@@ -27,8 +27,8 @@ class Badge(Instance):
             'type': self.type
         }
 
-class BadgeDetails(db.Model):
-    __tablename__='badge_details'
+class MedalDetails(db.Model):
+    __tablename__='medal_details'
     id = db.Column(db.Integer, primary_key=True)
     instance_id = db.Column(db.Integer, db.ForeignKey(Instance.id))
     image_name = db.Column(db.String(256))
@@ -45,18 +45,18 @@ class BadgeDetails(db.Model):
         }
 
 
-class UserBadge(db.Model):
+class UserMedal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, index=True)
-    badge_id = db.Column(db.Integer, index=True)
+    medal_id = db.Column(db.Integer, index=True)
 
-    def __init__(self, user, badge):
+    def __init__(self, user, medal):
         self.user_id = user.id
-        self.badge_id = badge.id
+        self.medal_id = medal.id
 
     def to_dict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'badge_id': self.badge_id,
+            'medal_id': self.medal_id,
         }

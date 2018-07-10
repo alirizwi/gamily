@@ -160,13 +160,21 @@ class Hooks(db.Model):
             'type': self.type
         }    
 
+# Instance registering
+from instance import instance
+app.register_blueprint(instance, url_prefix='/instance')
+
 # Badges registering
 from badges import badges
-app.register_blueprint(badges, url_prefix='/badges')
+app.register_blueprint(badges, url_prefix='/instance/badge')
+
+# Badges registering
+from medals import medals
+app.register_blueprint(medals, url_prefix='/instance/medal')
 
 # Leaderboard registering
 from leaderboard import leaderboard
-app.register_blueprint(leaderboard, url_prefix='/leaderboard')
+app.register_blueprint(leaderboard, url_prefix='/instance/leaderboard')
 
 # Avatar registering
 from avatar import avatar
@@ -403,13 +411,13 @@ def hooks_function():
 
                 if rule.gde_type == 'leaderboard':
                     print "LB"
-                    gde_url = 'http://localhost:5000/leaderboard/list/id/'+str(rule.gde_id)
+                    gde_url = 'http://localhost:5000/instance/leaderboard/list/id/'+str(rule.gde_id)
                     print "gde url", gde_url
                     r = requests.get(url=gde_url)
                     data = r.text
                     print "Res:", data
 
-                    url = 'http://localhost:5000/leaderboard/'+rule.action
+                    url = 'http://localhost:5000/instance/leaderboard/'+rule.action
                     print "url:", url
                     data = {'username': username,
                             'instance': data,
@@ -419,13 +427,13 @@ def hooks_function():
 
                 elif rule.gde_type == 'badge':
                     print "B"
-                    gde_url = 'http://localhost:5000/badges/list/id/'+str(rule.gde_id)
+                    gde_url = 'http://localhost:5000/instance/badge/list/id/'+str(rule.gde_id)
                     print "gde url", gde_url
                     r = requests.get(url=gde_url)
                     data = r.text
                     print "Res:", data
 
-                    url = 'http://localhost:5000/badges/'+rule.action
+                    url = 'http://localhost:5000/instance/badges/'+rule.action
                     print "url:", url
                     data = {'username': username,
                             'badge': data}

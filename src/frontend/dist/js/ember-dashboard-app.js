@@ -37,7 +37,7 @@
 
     var Instance = Ember.Object.extend({
         name: "Instance",
-        numRules: 0
+        rule_count: 0
     });
 
     var Rule = Ember.Object.extend({
@@ -66,8 +66,8 @@
         api_response: 0,
         ajaxResponse: '',
         ajaxURL: '',
-        badgesURL: '/backend/badges/list',
-        leaderboardURL: '/backend/leaderboard/list',
+        badgesURL: '/backend/instance/badge/list',
+        leaderboardURL: '/backend/instance/leaderboard/list',
         gdeURL: 'backend/gde/list',
         gdeResponse: '',
         createGDEPath: "",
@@ -134,10 +134,12 @@
                 name = response.data[i].name;
                 id = response.data[i].id;
                 type = response.data[i].type;
+                rule_count = response.data[i].rule_count;
                 arr.push(Instance.create({
                     'name': name,
                     'id': id,
-                    'type': type
+                    'type': type,
+                    'rule_count': rule_count
                 }));
             }
 
@@ -180,7 +182,7 @@
             if(path == 'badge'){
                 cAjax({
                     type: 'POST',
-                    url: 'backend/' + this.get('createGDEPath') + 's/create',
+                    url: 'backend/instance/' + this.get('createGDEPath') + '/create',
                     data: {
                         'name': parent.get('createGDEName'),
                         'description': parent.get('createGDEDescription'),
@@ -192,7 +194,7 @@
             else {
                 cAjax({
                     type: 'POST',
-                    url: 'backend/' + this.get('createGDEPath') + '/create',
+                    url: 'backend/instance/' + this.get('createGDEPath') + '/create',
                     data: {
                         'name': parent.get('createGDEName'),
                         'description': parent.get('createGDEDescription'),
@@ -316,11 +318,9 @@
                 parent.set('allActions', data);
                 // console.log("actions:" + parent.get('allActions'));
             };
-            if(path=='badge')
-                path='badges';
             cAjax({
                 type: 'GET',
-                url: '/backend/'+path+'/actions',
+                url: '/backend/instance/'+path+'/actions',
                 data: {},
                 success: success
             });

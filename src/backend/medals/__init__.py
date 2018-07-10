@@ -3,13 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from flask_jsonpify import jsonify
 
-badge = Flask(__name__)
-badge.config.from_object('badges.config')
-print badge.config['SQLALCHEMY_DATABASE_URI']
-db = SQLAlchemy(badge)
-from badges import models
-from badges.models import *
-badges = Blueprint('badges', 'badges')
+medal = Flask(__name__)
+medal.config.from_object('medals.config')
+print medal.config['SQLALCHEMY_DATABASE_URI']
+db = SQLAlchemy(medal)
+from medals import models
+from medals.models import *
+medals = Blueprint('medals', 'medals')
 import requests
 import json
 
@@ -36,8 +36,8 @@ def find_user_force(username):
     return user
 
 def find_badge(name):
-    badge = Badge.query.filter_by(name=name).first()
-    return badge
+    medal = Medal.query.filter_by(name=name).first()
+    return medal
 
 def delete_all_users(username):
     users = User.query.all()
@@ -47,11 +47,11 @@ def delete_all_users(username):
 
 #========================= Routes are defined below =======================#
 
-@badges.route('/', defaults={'page': 'index'})
+@medals.route('/', defaults={'page': 'index'})
 def module_name(page):
-    return 'Badges module'
+    return 'Medals module'
 
-# @badges.route('/users', methods=["GET"])
+# @medals.route('/users', methods=["GET"])
 # def show_all_users():
 #     users = User.query.all()
 #     data = []
@@ -66,19 +66,19 @@ def module_name(page):
 #         'data': data
 #     })
 
-@badges.route('/user/<page>', methods=["GET"])
+@medals.route('/user/<page>', methods=["GET"])
 def show_user(page):
     user = User.query.filter_by(fullname=page).first()
-    badge_ids = UserBadge.query.filter_by(user_id=user.id)
-    badges = []
+    badge_ids = UserMedal.query.filter_by(user_id=user.id)
+    medals = []
     for b in badge_ids:
-        badge = Badge.query.filter_by(id=b.badge_id, type='badge').first()
-        print badge
-        badges.append(badge.to_dict())
+        medal = Medal.query.filter_by(id=b.badge_id, type='medal').first()
+        print medal
+        medals.append(medal.to_dict())
     data = ({
         'id': user.id,
         'name': user.fullname,
-        'badges': badges
+        'medals': medals
     })
     return jsonify({
         'success': True,
@@ -86,19 +86,19 @@ def show_user(page):
         'data': data
     })
 
-@badges.route('/create', methods=["GET"])
+@medals.route('/create', methods=["GET"])
 def create_badge():
     try:
-        # badge = Badge(request.form['name'], request.form['description'], request.form['image_name'])
+        # medal = Medal(request.form['name'], request.form['description'], request.form['image_name'])
         # print request.form['name'], request.form['description'], request.form['image_name']
-        badge = Badge(request.args['name'], request.args['description'])
-        print "badge id:", badge.id
-        print "badge ID:", badge.getId()
-        db.session.add(badge)
+        medal = Medal(request.args['name'], request.args['description'])
+        print "medal id:", medal.id
+        print "medal ID:", medal.getId()
+        db.session.add(medal)
         db.session.commit()
-        print "badge id2:", badge.id
-        print "badge ID2:", badge.getId()        
-        badge_details = BadgeDetails(badge.getId(), request.args['image_name'])
+        print "medal id2:", medal.id
+        print "medal ID2:", medal.getId()        
+        badge_details = MedalDetails(medal.getId(), request.args['image_name'])
         print request.args['name'], request.args['description'], request.args['image_name']
         db.session.add(badge_details)
         db.session.commit()
@@ -110,18 +110,18 @@ def create_badge():
         })
     return jsonify({
         'success': True,
-        'message': 'Badge added successfully'
+        'message': 'Medal added successfully'
     })
 
-@badges.route('/list', methods=["GET"])
+@medals.route('/list', methods=["GET"])
 def show_all_badges():
-    badges = Badge.query.all()
+    medals = Medal.query.all()
     data = []
-    for badge in badges:
-        if badge.type == 'badge':
-            print "badge.id:", badge.id
-            print "badge.type", badge.type
-            url = "http://127.0.0.1:5000/rules/list?id="+str(badge.id)+"&type="+badge.type
+    for medal in medals:
+        if medal.type == 'medal':
+            print "medal.id:", medal.id
+            print "medal.type", medal.type
+            url = "http://127.0.0.1:5000/rules/list?id="+str(medal.id)+"&type="+medal.type
             print "url:", url
             r = requests.get(url=url)
             print "res: ", r.text
@@ -130,27 +130,27 @@ def show_all_badges():
             print "obj: ", obj
             print len(obj['data'])
             data.append({
-            'id': badge.id,
-            'name': badge.name,
-            'description': badge.description,
-            'type': badge.type,
+            'id': medal.id,
+            'name': medal.name,
+            'description': medal.description,
+            'type': medal.type,
             'rule_count': len(obj['data'])
             })
-        # data.append(badge.to_dict())
+        # data.append(medal.to_dict())
     return jsonify({
         'success': True,
         'message': '',
         'data': data
     })
 
-@badges.route('/list/id/<id>', methods=["GET"])
+@medals.route('/list/id/<id>', methods=["GET"])
 def show_current_badge(id):
     print "id:", id
-    badge = Badge.query.filter_by(id=id).first()
-    print badge.name
-    return badge.name
+    medal = Medal.query.filter_by(id=id).first()
+    print medal.name
+    return medal.name
 
-@badges.route('/actions', methods=["GET"])
+@medals.route('/actions', methods=["GET"])
 def show_all_badge_actions():
     data = []
     data.append({'name': 'award'})
@@ -160,18 +160,18 @@ def show_all_badge_actions():
         'data': data
     })
 
-@badges.route('/award', methods=["POST"])
+@medals.route('/award', methods=["POST"])
 def create_badge_user_mapping():
     try:
         user = find_user_force(request.form['username'])
-        badge = find_badge(request.form['badge'])
-        existing = UserBadge.query.filter_by(user_id=user.id, badge_id=badge.id).all()
+        medal = find_badge(request.form['medal'])
+        existing = UserMedal.query.filter_by(user_id=user.id, badge_id=medal.id).all()
         if len(existing) > 0:
             return jsonify({
                 'success': False,
-                'message': 'User already has this badge'
+                'message': 'User already has this medal'
             })
-        mapping = UserBadge(user, badge)
+        mapping = UserMedal(user, medal)
         db.session.add(mapping)
         db.session.commit()
     except:
@@ -181,12 +181,12 @@ def create_badge_user_mapping():
         })
     return jsonify({
         'success': True,
-        'message': 'Badge awarded successfully'
+        'message': 'Medal awarded successfully'
     })
 
-@badges.route('/user_badges', methods=["GET"])
+@medals.route('/user_badges', methods=["GET"])
 def show_all_user_badges():
-    user_badges = UserBadge.query.all()
+    user_badges = UserMedal.query.all()
     data = []
     for user_badge in user_badges:
         data.append(user_badge.to_dict())
@@ -196,6 +196,6 @@ def show_all_user_badges():
         'data': data
     })
 
-@badges.route('/static/<page>', methods=["GET"])
+@medals.route('/static/<page>', methods=["GET"])
 def send_static(page):
-    return send_from_directory('badges/static', page)
+    return send_from_directory('medals/static', page)
